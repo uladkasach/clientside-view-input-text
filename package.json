@@ -1,6 +1,6 @@
 {
   "name": "clientside-view-input-text",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a text input made to plug into the browser utilizing the clientside-view-loader module; input validation, type enforcement, more",
   "main": "compiler.js",
   "scripts": {
@@ -30,5 +30,8 @@
     "validation"
   ],
   "author": "uladkasach",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "clientside-view-loader": "^1.0.2"
+  }
 }
