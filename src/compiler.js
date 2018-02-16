@@ -1,3 +1,5 @@
+require("./colors.css")
+
 module.exports = {
     generate : function(dom_clone, options){
         var template = dom_clone;

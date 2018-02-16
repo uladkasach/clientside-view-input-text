@@ -1,0 +1,28 @@
+
+.text_handler_BottomBorderDefault {
+    border:1px solid #c3aea9;
+    border-radius:2px;
+}
+.text_handler_SupportTextColorDefault {
+    color:#7c7c7c;
+}
+
+.text_handler_BottomBorderValid {
+    border:1px solid #2196F3;
+    border-radius:2px;
+}
+.text_handler_SupportTextColorValid {
+    color:#2196F3;
+}
+
+.text_handler_BottomBorderInvalid{
+    border:1px solid #ff2a2a;
+    border-radius:2px;
+}
+.text_handler_SupportTextColorInvalid{
+    color:#ce0202;
+}
+
+.text_handler_MainTextColor {
+    color:black;
+}
