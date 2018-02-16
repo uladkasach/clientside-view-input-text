@@ -1,6 +1,6 @@
 {
   "name": "clientside-view-input-text",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a text input made to plug into the browser utilizing the clientside-view-loader module; input validation, type enforcement, more",
   "main": "compiler.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/uladkasach/clientside-view-input-text.git"
   },
+  "require_mode": "async",
   "keywords": [
     "browser",
     "clientside",
