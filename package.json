@@ -1,8 +1,8 @@
 {
   "name": "clientside-view-input-text",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "a text input made to plug into the browser utilizing the clientside-view-loader module; input validation, type enforcement, more",
-  "main": "compiler.js",
+  "main": "src/compiler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
