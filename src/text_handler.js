@@ -1,7 +1,3 @@
-
-
-
-
 var global_textHandler_enforceHandler = {
 
     alpha_only : function(textHandler){
@@ -60,46 +56,20 @@ var global_textHandler_enforceHandler = {
     },
     numeric_only_blur : function() {return true},
 
-    address_only : function(){return true;},
-    address_only_blur : function(textHandler){
+
+    numeric_date : function(textHandler){
         var value = textHandler.value;
-        var autocomplete_manager = textHandler.google_autocomplete_manager;
-        if(autocomplete_manager.enforce_input_is_valid_autocompleted_place() === false){
-            return false;
-        } else {
+        ///////////////////////////
+
+        var enforcedValue = value.replace(/[^0-9\\\/\-]/g, '');  // any number + / or \ or -
+
+        ///////////////////////////
+        if(value == enforcedValue){
             return true;
         }
-
-        /*
-        var autocomplete_manager = textHandler.google_autocomplete_manager;
-        var autocomplete = autocomplete_manager.autocomplete_object;
-        //var place = autocomplete.getPlace();
-
-        //console.log(place);
-        //console.log(value);
-        if(value == "") return false;
-
-        var newAutocompleteService = new google.maps.places.AutocompleteService();
-        newAutocompleteService.getPlacePredictions(
-            {
-                'input': value,
-            },
-            function listentoresult(list, status) {
-                console.log(list[0]);
-                textHandler.DOM.inputElement.value = list[0].description; // update address in original text box
-                //console.log("Here i am");
-                //console.log(autocomplete);
-                //google.maps.event.trigger(autocomplete, 'place_changed'); // ensure original autocomplete is updated in response to text update
-                autocomplete_manager.place_id = list[0].place_id;
-            }
-        );
-        */
-
-
-
-
+        return enforcedValue;
     },
-
+    numeric_date_blur : function() {return true},
 
 
     price : function(textHandler){
@@ -151,8 +121,39 @@ var global_textHandler_enforceHandler = {
         }
         return enforcedValue;
     },
+
 }
 
+var validation_handler = {
+
+    date : function(bool_blur, value){
+        if(!bool_blur) return true; // assume ok if not blurred
+        var dateString = value;
+
+        // Validates that the input string is a valid date formatted as "mm/dd/yyyy"; https://stackoverflow.com/a/6178341/3068233
+        // First check for the pattern
+        if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString)) return false;
+
+        // Parse the date parts to integers
+        var parts = dateString.split("/");
+        var day = parseInt(parts[1], 10);
+        var month = parseInt(parts[0], 10);
+        var year = parseInt(parts[2], 10);
+
+        // Check the ranges of month and year
+        if(year < 1000 || year > 3000 || month == 0 || month > 12)
+            return false;
+
+        var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+        // Adjust for leap years
+        if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+            monthLength[1] = 29;
+
+        // Check the range of the day
+        return day > 0 && day <= monthLength[month - 1];
+    }
+}
 
 function global_textHandler (){
     ////////////////////
@@ -190,6 +191,7 @@ global_textHandler.prototype = {
     // Constants Re-Defined in init.js
     ////////////////////
     enforceHandler : global_textHandler_enforceHandler,
+    validation_handler : validation_handler,
     classes : {},
     /*
     classes : {
@@ -279,7 +281,7 @@ global_textHandler.prototype = {
         var value = this.value;
         if(value.length > 0 || this.inputValidationFunction !== null){
             // If there is input, validate it or a specified validation function
-            this.validateTheInput();
+            this.validateTheInput(false);
         } else {
             // If its empty and key the input is active, just show valid
             this.displayThatInputIs("valid");
@@ -293,11 +295,11 @@ global_textHandler.prototype = {
       this.raw_validity = current_raw_validity;
     },
 
-    validateTheInput : function(boolOnBlur, submissionAttempt){
+    validateTheInput : function(bool_blur, submissionAttempt){
        if(this.inputValidationFunction == null){
             this.displayThatInputIs("valid");
        } else {
-           var status = this.inputValidationFunction(boolOnBlur, submissionAttempt);
+           var status = this.inputValidationFunction(bool_blur, this.value, submissionAttempt);
            //console.log(status);
            if(status == null){
                 this.displayThatInputIs("default");

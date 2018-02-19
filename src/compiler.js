@@ -66,6 +66,9 @@ module.exports = {
                         textHandler.enforce.price = true;
                     } else if(options.type == "percentage" || options.type == "float"){
                         textHandler.enforce.numeric_only = true;
+                    } else if(options.type == "date"){
+                        textHandler.inputValidationFunction = textHandler.validation_handler.date; // assign validation function
+                        textHandler.enforce.numeric_date = true;
                     } else {
                         console.error("Unknown type requested for options.type on template.input_text ")
                     }
