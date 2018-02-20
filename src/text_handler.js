@@ -57,6 +57,45 @@ var global_textHandler_enforceHandler = {
     numeric_only_blur : function() {return true},
 
 
+    numeric_time : function(textHandler){
+        var value = textHandler.value;
+        ///////////////////////////
+
+        var enforcedValue = value.replace(/[^0-9\:]/g, '');
+
+        ///////////////////////////
+        if(value == enforcedValue){
+            return true;
+        }
+        return enforcedValue;
+    },
+    numeric_time_blur : function(textHandler) {
+        var value = textHandler.value;
+        ///////////////////////////
+        if(value == "") return true; // if its empty, enable it to be null
+
+        function pad_each_part_to_two(part){
+            if(typeof part == "undefined" || part == null) part = "00"; // default to zero if undefined
+            while(part.length < 2) part = "0" + part; // padd with 0's at front if less than 2
+            if(part.length > 2) part = part.substring(0,2);
+            return part;
+        }
+
+        var parts = value.split(":");
+        while (parts.length < 3) parts.push("00"); // ensure default is 00:00:00 if any number is defined
+        var cleaned_parts = [];
+        parts.forEach((part)=>{
+            var cleaned_part = pad_each_part_to_two(part);
+            cleaned_parts.push(cleaned_part);
+        })
+        time = cleaned_parts.join(":");
+
+        var enforced_value = time;
+        ///////////////////////////
+        if(value == enforced_value) return true;
+        return enforced_value;
+    },
+
     numeric_date : function(textHandler){
         var value = textHandler.value;
         ///////////////////////////
@@ -152,6 +191,16 @@ var validation_handler = {
 
         // Check the range of the day
         return day > 0 && day <= monthLength[month - 1];
+    },
+    time : function(bool_blur, value){
+        if(!bool_blur) return true; // ok if not blured yet
+        var s = value + ""; // https://stackoverflow.com/a/11928894/3068233
+        var t = s.split(':');
+        return /^\d\d:\d\d:\d\d$/.test(s) &&
+             t[0] >= 0 && t[0] < 25 &&
+             t[1] >= 0 && t[1] < 60 &&
+             t[2] >= 0 && t[2] < 60;
+        return valid;
     }
 }
 
@@ -319,7 +368,7 @@ global_textHandler.prototype = {
            if(this.required == false) var status = null;
            if(this.value.length > 0) var status = true;
        } else {
-           var status = this.inputValidationFunction(boolOnBlur, submissionAttempt);
+           var status = this.inputValidationFunction(boolOnBlur, this.value, submissionAttempt);
        }
        return status;
     },

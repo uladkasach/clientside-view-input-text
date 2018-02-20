@@ -31,17 +31,6 @@ module.exports = {
             template.querySelector("input").name = options.name;
 
 
-
-        // add extraction logic (get value from input)
-        template.extract = {
-            value : function(){
-                return template.querySelector("input").value;
-            },
-        }
-
-
-
-
         /*
             define and initialize text handler
         */
@@ -69,6 +58,9 @@ module.exports = {
                     } else if(options.type == "date"){
                         textHandler.inputValidationFunction = textHandler.validation_handler.date; // assign validation function
                         textHandler.enforce.numeric_date = true;
+                    } else if(options.type == "time"){
+                        textHandler.inputValidationFunction = textHandler.validation_handler.time; // assign validation function
+                        textHandler.enforce.numeric_time = true;
                     } else {
                         console.error("Unknown type requested for options.type on template.input_text ")
                     }
@@ -78,9 +70,34 @@ module.exports = {
 
                 // add input to label manager
                 labelHandler.textHandlers.push(textHandler);
+                return textHandler;
             })
 
 
-        return promise_to_initialize_handler.then(()=>{return template});
+
+            // add extraction logic (get value from input)
+            var promise_to_define_extraction = promise_to_initialize_handler
+                .then((text_handler)=>{
+                    // extraction functions
+                    template.extract = {
+                        value : function(){
+                            return text_handler.value;
+                        },
+                        status : function(){
+                            return text_handler.status;
+                        },
+                    }
+
+                    // getter methods
+                    Object.defineProperty(template, 'value', { // dom.value
+                        get: function() { return template.extract.value(); }
+                    });
+                    Object.defineProperty(template, 'status', { // dom.status
+                        get: function() { return template.extract.status(); }
+                    });
+                })
+
+
+        return promise_to_define_extraction.then(()=>{return template});
     }
 }
