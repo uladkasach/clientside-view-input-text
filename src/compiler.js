@@ -1,4 +1,4 @@
-require("./colors.css")
+load("./colors.css")
 
 module.exports = {
     generate : function(dom_clone, options){
@@ -34,7 +34,7 @@ module.exports = {
         /*
             define and initialize text handler
         */
-        var promise_to_initialize_handler = Promise.all([require("./text_handler.js"), require("./label_handler.js")])
+        var promise_to_initialize_handler = Promise.all([load("./text_handler.js"), load("./label_handler.js")])
             .then(([text_handler_class, label_handler_class])=>{
 
                 var labelHandler = new label_handler_class();
