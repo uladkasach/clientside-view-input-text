@@ -16,11 +16,13 @@ module.exports = async function(template, options){
         inputHolder : template.querySelector(".input_text_template_input_holder"),
     };
     textHandler.labelManager = labelHandler;
-    textHandler.required = (options.required === false)?false:true; // default to true
+    textHandler.required = (options.required === true)?true:false; // default to false
 
     // if type is defined, add input enforcement
     if(typeof options.type !== "undefined"){
-        if(options.type == "price"){
+        if(options.type == "number"){
+            textHandler.enforce.digits_only = true;
+        } else if(options.type == "price"){
             textHandler.enforce.price = true;
         } else if(options.type == "percentage" || options.type == "float"){
             textHandler.enforce.numeric_only = true;

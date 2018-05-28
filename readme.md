@@ -27,6 +27,6 @@ var value = text_button.value; // use the getter
     disabled : BOOLEAN, // disable the input
     password : BOOLEAN, // set as a password input, user input rendered as ****
     required : BOOLEAN, // make this a required field; shows red if empty
-    type : STRING, // choose from ["price", "percentage", "date", "time"]; input will enforce that only characters possible for that are accepted
+    type : STRING, // choose from ["number", "price", "percentage", "date", "time"]; input will enforce that only characters possible for that are accepted and validate that it is valid
 }
 ```
