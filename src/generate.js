@@ -28,6 +28,10 @@ module.exports = async function(dom, options){
     if(typeof options.name != "undefined")
         dom.querySelector("input").name = options.name;
 
+    // set label attribute
+    if(typeof options.label == "string")  // if defined
+        dom.setAttribute('label', options.label);
+
 
     return dom;
 }
