@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title> Text Input Demo</title>
+        <script src = '/node_modules/clientside-require/dist/bundle.js'></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Exo:200');
+            html{
+                font-family: 'Exo', sans-serif;
+                color:black;
+                -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
+            }
+        </style>
+    </head>
+    <body>
+        <div class = 'input_holder' style = 'width:400px;'></div>
+        <script>
+            (async function(){
+                var view_loader = await load('clientside-view-loader'); // load the view loader
+
+                /*
+                    floating view
+                */
+                // generate the buttons
+                var text_input = await view_loader.load('clientside-view-input-text').build({label:"First Name (required)", required:true});
+                document.querySelector('.input_holder').appendChild(text_input);
+                var text_input = await view_loader.load('clientside-view-input-text').build({label:"Last Name (optional)", required:false});
+                document.querySelector('.input_holder').appendChild(text_input);
+
+            })()
+        </script>
+    </body>
+</html>

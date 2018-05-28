@@ -1,3 +1,7 @@
+input:focus{
+    outline: none;
+}
+
 
 .text_handler_BottomBorderDefault {
     border:1px solid #c3aea9;
