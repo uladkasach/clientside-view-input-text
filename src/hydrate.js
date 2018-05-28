@@ -48,10 +48,13 @@ module.exports = async function(template, options){
         add extraction logic (get value from input)
     */
     Object.defineProperty(template, 'value', { // dom.value
-        get: function() { return text_handler.value; }
+        get: function() { return textHandler.value; }
     });
     Object.defineProperty(template, 'status', { // dom.status
-        get: function() { return text_handler.status; }
+        get: function() {
+            if(textHandler.required) textHandler.determineStatusOnBlur(); // if required, determine status first
+            return textHandler.status;
+        }
     });
 
 
