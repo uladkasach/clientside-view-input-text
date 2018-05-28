@@ -23,10 +23,12 @@ module.exports = async function(dom, options){
     if(typeof options.password !== "undefined" && options.password === true)
         dom.querySelector("input").type = "password";
 
-
     // give name if exists
-    if(typeof options.name != "undefined")
+    if(typeof options.name != "undefined"){
         dom.querySelector("input").name = options.name;
+        dom.querySelector("input").setAttribute("name", options.name);
+        dom.setAttribute("name", options.name); // set it on main element as well as on input element
+    }
 
     // set label attribute
     if(typeof options.label == "string")  // if defined
