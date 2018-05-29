@@ -13,6 +13,9 @@
     </head>
     <body>
         <div class = 'input_holder' style = 'width:400px;'></div>
+        <div class = 'tri_field' style = 'width:400px; display:flex'>
+
+        </div>
         <script>
             (async function(){
                 var view_loader = await load('clientside-view-loader'); // load the view loader
@@ -25,6 +28,17 @@
                 document.querySelector('.input_holder').appendChild(text_input);
                 var text_input = await view_loader.load('clientside-view-input-text').build({label:"Last Name (optional)", required:false});
                 document.querySelector('.input_holder').appendChild(text_input);
+
+                // generate the tri-field input
+                var day = await view_loader.load('clientside-view-input-text').build({placeholder:"day", required:true});
+                day.style.flex="1";
+                var month = await view_loader.load('clientside-view-input-text').build({placeholder:"month", required:true});
+                month.style.flex="1";
+                var year = await view_loader.load('clientside-view-input-text').build({placeholder:"year", required:true});
+                year.style.flex="1";
+                document.querySelector('.tri_field').appendChild(day)
+                document.querySelector('.tri_field').appendChild(month)
+                document.querySelector('.tri_field').appendChild(year)
 
             })()
         </script>

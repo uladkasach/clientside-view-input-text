@@ -2,6 +2,9 @@ load("./colors.css")
 module.exports = async function(dom, options){
     if(typeof options == "undefined") options = {};
 
+    // set color scheme
+    dom.classList.add("color_scheme-blue"); // default ; TODO enable other options
+
     // set label
     if(typeof options.label !== "undefined") // if label is defined, set it
         dom.querySelector(".input_text_template_label").innerHTML = options.label;
@@ -39,8 +42,11 @@ module.exports = async function(dom, options){
         dom.style.maxWidth = options.max_width + "px";
 
     // set label attribute
-    if(typeof options.label == "string")  // if defined
+    if(typeof options.label == "string"){ // if defined
         dom.setAttribute('label', options.label);
+    } else {
+        dom.querySelector('.input_text_template_label').remove();
+    }
 
 
     return dom;

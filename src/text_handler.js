@@ -1,4 +1,98 @@
-var global_textHandler_enforceHandler = {
+function Text_Handler(dom, constraints, required){
+    this.dom = dom;
+    this.text_element = this.dom.querySelector("input[type='text']");
+
+    // define input constraints
+    if(typeof input_constraints == "undefined") input_constraints = [];
+    if(!Array.isArray(input_constraints)) throw new Error("input constraints must be an array");
+    this.input_constraints = constraints;
+
+    // append listeners
+    this.text_element.onfocus = (function(){ this.determine_status(); }).bind(this);
+    this.text_element.onkeyup = (function(){ this.determine_status(); }).bind(this);
+    this.text_element.onblur = (function(){ this.determine_status(true); }).bind(this);
+
+    // define requried state
+    if(required === true) this.required = true;
+
+    // define state
+    this.current_status = "default";
+    this.display_status_as("default"); // initialize as default status
+}
+
+///////////////////////////////////////////////////////////////////
+// Static Properties and Methods
+/////////////////////////////////////
+Text_Handler.prototype = {
+    /*
+        utility getters and setters
+    */
+    get status(){
+        return this.current_status;
+    },
+    get value () {
+        return this.text_element.value;
+    },
+    set value (str) {
+        this.text_element.value = str;
+    },
+    on_status_change(a_function) {
+        this.on_status_change = a_function;
+    },
+
+    /*
+        logic
+    */
+    determine_status : function(bool_on_blur){
+        this.enforce_input_constraints(bool_on_blur);
+        if(bool_on_blur && this.value.length == 0 && this.required === true){ // if required, must not be empty
+            var status = "invalid";
+        } else if(this.value.length > 0 || !bool_on_blur){ // if value exists OR we are still focused, set status to valid
+            var status = "valid";
+        } else {
+            var status = "default";
+        }
+        this.update_status_to(status); // update the status
+        return status;
+    },
+    enforce_input_constraints : function(bool_on_blur){
+        var key_modifier = (bool_on_blur)?"_blur":""; // if bool_on_blur, modify with "_blur"
+        this.input_constraints.forEach((constraint)=>{
+            var original_input = this.value;
+            var constrained_input = input_constraint_handler[this_key+key_modifier](original_value);
+            if(original_input != constrained_input) this.value = constrained_input; // if constrained value is not equal to actual value, update value
+        })
+    },
+
+
+    /*
+        update status function must:
+         - update ui to show status
+         - alert the label if status changed
+    */
+    update_status_to : function(new_status){
+        if(this.current_status == new_status) return; // do nothing if already that status
+        this.current_status = new_status;
+        this.display_status_as(new_status);
+        if(typeof this.on_status_change == "function") this.on_status_change(new_status); // if there is an on status change function, run it
+    },
+    display_status_as : function(status){
+        this.dom.setAttribute('input-status', status)
+    },
+}
+
+
+
+
+module.exports = Text_Handler;
+
+
+
+
+
+
+
+var input_enforce_handler = {
 
     alpha_only : function(textHandler){
         var value = textHandler.value;
@@ -162,299 +256,3 @@ var global_textHandler_enforceHandler = {
     },
 
 }
-
-var validation_handler = {
-
-    date : function(bool_blur, value){
-        if(!bool_blur) return true; // assume ok if not blurred
-        var dateString = value;
-
-        // Validates that the input string is a valid date formatted as "mm/dd/yyyy"; https://stackoverflow.com/a/6178341/3068233
-        // First check for the pattern
-        if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString)) return false;
-
-        // Parse the date parts to integers
-        var parts = dateString.split("/");
-        var day = parseInt(parts[1], 10);
-        var month = parseInt(parts[0], 10);
-        var year = parseInt(parts[2], 10);
-
-        // Check the ranges of month and year
-        if(year < 1000 || year > 3000 || month == 0 || month > 12)
-            return false;
-
-        var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-
-        // Adjust for leap years
-        if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
-            monthLength[1] = 29;
-
-        // Check the range of the day
-        return day > 0 && day <= monthLength[month - 1];
-    },
-    time : function(bool_blur, value){
-        if(!bool_blur) return true; // ok if not blured yet
-        var s = value + ""; // https://stackoverflow.com/a/11928894/3068233
-        var t = s.split(':');
-        return /^\d\d:\d\d:\d\d$/.test(s) &&
-             t[0] >= 0 && t[0] < 25 &&
-             t[1] >= 0 && t[1] < 60 &&
-             t[2] >= 0 && t[2] < 60;
-        return valid;
-    }
-}
-
-function global_textHandler (){
-    ////////////////////
-    // Constants defined externally
-    ////////////////////
-    this.inputValidationFunction = null;
-    this.google_autocomplete_manager = null;
-    this.DOM = {}; // used also with coordination of classes, if defined in classes must be defined in DOM
-    /*
-        thisHandler.DOM.inputElement = document.getElementById(theID + "_"+"inputElement");
-        thisHandler.DOM.inputHolder = document.getElementById(theID + "_"+"inputHolder");
-        thisHandler.DOM.placeHolder = document.getElementById(theID + "_"+"placeHolder");
-    */
-    this.labelManager = null;
-    this.enforce = {
-        no_space : false,
-        digits_only : false,
-        price : false,
-        alpha_only : false,
-    };
-
-    ////////////////////
-    // Internally defined constants
-    ////////////////////
-    this.currentStatus = "default";
-    this.raw_validity = null;
-}
-
-///////////////////////////////////////////////////////////////////
-// Static Properties and Methods
-/////////////////////////////////////
-global_textHandler.prototype = {
-
-    ////////////////////
-    // Constants Re-Defined in init.js
-    ////////////////////
-    enforceHandler : global_textHandler_enforceHandler,
-    validation_handler : validation_handler,
-    classes : {},
-    /*
-    classes : {
-        inputElement : {
-            default : ...,
-            valid : ....,
-            invalid : .....,
-        }
-    },
-    */
-
-    get status(){
-        return this.currentStatus;
-    },
-
-    get value () {
-        return this.DOM.inputElement.value;
-    },
-
-    set value (str) {
-        this.DOM.inputElement.value = str;
-    },
-
-    initialize : function(){
-        // set classes to elements
-        if(typeof this.DOM.inputElement !== "undefined") this.DOM.inputElement.className += " " + this.classes.inputElement.default;
-        if(typeof this.DOM.inputHolder !== "undefined") this.DOM.inputHolder.className += " " + this.classes.inputHolder.default;
-        if(typeof this.DOM.placeHolder !== "undefined") this.DOM.placeHolder.className += " " + this.classes.placeHolder.default;
-
-        // set bindings
-        this.DOM.inputElement.onfocus = (function(){ this.determineStatusOnActivity(); }).bind(this);
-        this.DOM.inputElement.onkeyup = (function(){ this.determineStatusOnActivity(); }).bind(this);
-        this.DOM.inputElement.onblur = (function(){ this.determineStatusOnBlur(); }).bind(this);
-    },
-
-    enforceInputRules : function(){
-        var keys = Object.keys(this.enforce);
-        var total = keys.length;
-        for(var index = 0; index < total; index++){
-            var thisKey = keys[index];
-            var boolToEnforce = this.enforce[thisKey];
-            if(boolToEnforce){
-                var result = this.enforceHandler[thisKey](this);//run the function and pass this as a parameter
-                if(typeof result == "string"){
-                    this.value = result;
-                }
-            }
-        }
-    },
-
-
-    enforceInputRules_blur : function(){
-        var keys = Object.keys(this.enforce);
-        var total = keys.length;
-        for(var index = 0; index < total; index++){
-            var thisKey = keys[index];
-            var boolToEnforce = this.enforce[thisKey];
-            if(boolToEnforce){
-                var result = this.enforceHandler[thisKey+"_blur"](this);//run the function and pass this as a parameter
-                if(typeof result == "string"){
-                    this.value = result;
-                }
-            }
-        }
-    },
-
-    determineStatusOnBlur : function(submissionAttempt){
-        this.enforceInputRules_blur();
-
-        var value = this.value;
-        if(value.length > 0 || this.inputValidationFunction !== null){
-            // If there is input, validate it or a specified validation function
-            this.validateTheInput(true, submissionAttempt);
-        } else if (this.required == true){
-            // If its empty and required, show invalid
-            this.displayThatInputIs("invalid");
-        } else {
-            // If its empty and not required, show default
-            this.displayThatInputIs("default");
-        }
-        this.passRawStatusToLabel();
-    },
-
-    determineStatusOnActivity : function(){
-        // Enforce Input Rules
-        this.enforceInputRules();
-        var value = this.value;
-        if(value.length > 0 || this.inputValidationFunction !== null){
-            // If there is input, validate it or a specified validation function
-            this.validateTheInput(false);
-        } else {
-            // If its empty and key the input is active, just show valid
-            this.displayThatInputIs("valid");
-        }
-        this.passRawStatusToLabel();
-    },
-
-    passRawStatusToLabel: function(){
-      var current_raw_validity = this.assessRawValidity(true, true);
-      if(this.raw_validity != current_raw_validity) this.labelManager.respondToRawValidityChange(current_raw_validity);
-      this.raw_validity = current_raw_validity;
-    },
-
-    validateTheInput : function(bool_blur, submissionAttempt){
-       if(this.inputValidationFunction == null){
-            this.displayThatInputIs("valid");
-       } else {
-           var status = this.inputValidationFunction(bool_blur, this.value, submissionAttempt);
-           //console.log(status);
-           if(status == null){
-                this.displayThatInputIs("default");
-           } else if(status == true){
-                this.displayThatInputIs("valid");
-           } else {
-                this.displayThatInputIs("invalid");
-           }
-      }
-    },
-
-    assessRawValidity : function(boolOnBlur, submissionAttempt){
-       boolOnBlur = true;
-       submissionAttempt = true;
-       if(this.inputValidationFunction == null){
-           if(this.required == true) var status = false;
-           if(this.required == false) var status = null;
-           if(this.value.length > 0) var status = true;
-       } else {
-           var status = this.inputValidationFunction(boolOnBlur, this.value, submissionAttempt);
-       }
-       return status;
-    },
-
-    displayThatInputIs : function(status, force){
-        if(status == null){
-            status = "default";
-        } else if (status == true){
-            status = "valid";
-        } else if (status == false){
-            status = "invalid";
-        }
-        //console.log(status);
-        if(this.currentStatus == status){
-            return;
-        }
-
-        if(status == "default" && this.required == true && force !== true){
-            // if this is a required field, it should never go back to default, it should go to invalid
-            status = "invalid";
-        }
-
-        keys = Object.keys(this.classes);
-        total = keys.length;
-        currentStatus = (this.currentStatus);
-        for(index = 0; index < total; index++){
-            thisKey = keys[index];
-            if(thisKey == "labelHolder"){
-                console.log("Warning : labelHolder was set in DOM");
-            } else {
-                this.changeDisplayStatusFromTo(thisKey, currentStatus, status);
-            }
-        }
-        this.currentStatus = status;
-
-
-        ///////////////////////
-        // LabelHolder is parsed seperately due to cases when multiple inputs fall under the same label
-        ///////////////////////
-        this.labelManager.changeDisplayStatusFromTo(status);
-    },
-
-    changeDisplayStatusFromTo : function(thisKey, fromStatus, toStatus){
-        currentStatus = fromStatus;
-        status = toStatus;
-
-        //console.log(thisKey);
-        currentClass = this.classes[thisKey][currentStatus];
-        newClass = this.classes[thisKey][status];
-        if(currentClass == newClass) { return; }; // if they're equal, dont do anything
-        thisElement = this.DOM[thisKey];
-        if(thisElement == undefined){
-            // if the DOM element was never defined, warn user and skip;
-            //console.log("Warning : element for " + thisKey + " was never defined or does not exist, skipping");
-            return;
-        }
-        elementClassContainsExpectedClass = (thisElement.className.indexOf(currentClass) > -1);
-        if(!elementClassContainsExpectedClass){
-            // If the element does not have the expected class inside its class name, warn client and skip
-            console.log("Warning : input element without current class name, not changing class");
-            return;
-        }
-        // Action
-        thisElement.className = thisElement.className.replace(currentClass, newClass); // replace the old class with new class
-    },
-}
-
-
-
-global_textHandler.prototype.classes = {
-    inputElement : {
-        default : null,
-        valid : null,
-        invalid : null,
-    },
-    inputHolder : {
-        default : "text_handler_BottomBorderDefault",
-        valid : "text_handler_BottomBorderValid",
-        invalid : "text_handler_BottomBorderInvalid",
-    },
-    placeHolder : {
-        default : "text_handler_SupportTextColorDefault",
-        valid : "text_handler_MainTextColor",
-        invalid : "text_handler_SupportTextColorDefault",
-    },
-};
-
-
-module.exports = global_textHandler;

@@ -1,32 +1,31 @@
-input:focus{
+.input_text_element input:focus{
     outline: none;
 }
-
-
-.text_handler_BottomBorderDefault {
-    border:1px solid #c3aea9;
+.input_text_template_input_holder{
+    border:1px solid black;
     border-radius:2px;
+    color:black;
 }
-.text_handler_SupportTextColorDefault {
+
+/* color scheme blue */
+.color_scheme-blue.input_text_template_input_holder ::placeholder{
+    color:#d2cece;
+}
+.color_scheme-blue.input_text_element[input-status='default']{
     color:#7c7c7c;
 }
-
-.text_handler_BottomBorderValid {
-    border:1px solid #2196F3;
-    border-radius:2px;
+.color_scheme-blue.input_text_element[input-status='default'] .input_text_template_input_holder{
+    border-color:#c3aea9;
 }
-.text_handler_SupportTextColorValid {
+.color_scheme-blue.input_text_element[input-status='valid']{
     color:#2196F3;
 }
-
-.text_handler_BottomBorderInvalid{
-    border:1px solid #ff2a2a;
-    border-radius:2px;
+.color_scheme-blue.input_text_element[input-status='valid'] .input_text_template_input_holder{
+    border-color:#2196F3;
 }
-.text_handler_SupportTextColorInvalid{
+.color_scheme-blue.input_text_element[input-status='invalid']{
     color:#ce0202;
 }
-
-.text_handler_MainTextColor {
-    color:black;
+.color_scheme-blue.input_text_element[input-status='invalid'] .input_text_template_input_holder{
+    border-color:#ff2a2a;
 }

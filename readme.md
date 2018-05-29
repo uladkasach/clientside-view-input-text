@@ -2,8 +2,6 @@
 
 ![clientside_view_input_text-demo](https://user-images.githubusercontent.com/10381896/40626997-25e91924-628a-11e8-9cea-85207a605f22.gif)
 
-Note: This module may have many bugs as it is a legacy implementation ported into the clientside-view environment and has significant technical debt. This message will be removed when this status is resolved.
-
 ## Install
 `npm install clientside-view-input-text --save`
 
