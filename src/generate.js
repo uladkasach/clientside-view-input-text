@@ -30,6 +30,14 @@ module.exports = async function(dom, options){
         dom.setAttribute("name", options.name); // set it on main element as well as on input element
     }
 
+    // define placeholder
+    if(typeof options.placeholder != "undefined")
+        dom.querySelector('input').placeholder = options.placeholder;
+
+    // set max width
+    if(typeof options.max_width != "undefined")
+        dom.style.maxWidth = options.max_width + "px";
+
     // set label attribute
     if(typeof options.label == "string")  // if defined
         dom.setAttribute('label', options.label);
