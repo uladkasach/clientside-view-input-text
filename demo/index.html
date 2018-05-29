@@ -13,7 +13,9 @@
     </head>
     <body>
         <div class = 'input_holder' style = 'width:400px;'></div>
-        <div class = 'tri_field' style = 'width:400px; display:flex'>
+        <br>
+        <div class = 'tri_field-label'> Date of Birth </div>
+        <div class = 'tri_field' style = 'width:400px; display:flex; margin-top:-3px;'>
 
         </div>
         <script>
@@ -30,16 +32,20 @@
                 document.querySelector('.input_holder').appendChild(text_input);
 
                 // generate the tri-field input
-                var day = await view_loader.load('clientside-view-input-text').build({placeholder:"day", required:true});
+                var day = await view_loader.load('clientside-view-input-text').build({placeholder:"day", required:true, type:"number"});
                 day.style.flex="1";
-                var month = await view_loader.load('clientside-view-input-text').build({placeholder:"month", required:true});
+                var month = await view_loader.load('clientside-view-input-text').build({placeholder:"month", required:true, type:"number"});
                 month.style.flex="1";
-                var year = await view_loader.load('clientside-view-input-text').build({placeholder:"year", required:true});
+                var year = await view_loader.load('clientside-view-input-text').build({placeholder:"year", required:true, type:"number"});
                 year.style.flex="1";
                 document.querySelector('.tri_field').appendChild(day)
                 document.querySelector('.tri_field').appendChild(month)
                 document.querySelector('.tri_field').appendChild(year)
 
+                // build the label
+                var label_element = document.querySelector('.tri_field-label');
+                var Multi_Field_Input = await load("clientside-view-input-text");
+                var date_of_birth = new Multi_Field_Input(label_element, [day, month, year]);
             })()
         </script>
     </body>

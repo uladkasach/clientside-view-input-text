@@ -44,7 +44,14 @@ module.exports = async function(dom, options){
     */
     if(typeof options.label == "string"){
         var label_element = dom.querySelector(".input_text_template_label");
-        var labelHandler = new Label_Handler(label_element, [text_handler]);
+        new Label_Handler(label_element, [text_handler]);
+    }
+
+    /*
+        enable setting on_change function - to support multi_field input
+    */
+    dom.set_on_status_change = function(a_function){
+        text_handler.set_on_status_change(a_function);
     }
 
     /*
@@ -56,6 +63,11 @@ module.exports = async function(dom, options){
     Object.defineProperty(dom, 'status', { // dom.status
         get: function() {
             if(required) text_handler.determine_status(true); // if required, determine status first
+            return text_handler.status;
+        }
+    });
+    Object.defineProperty(dom, 'current_status', { // non-final status
+        get: function() {
             return text_handler.status;
         }
     });

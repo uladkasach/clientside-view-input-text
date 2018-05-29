@@ -15,8 +15,8 @@ function Label_Handler(label_element, text_handlers){
 
 Label_Handler.prototype = {
     // static constants
-    rank : [null, "valid", "default", "invalid"],
-    rankBool : [null, true, null, false],
+    rank : [null, "valid", "default", "active_valid", "invalid"],
+    rankBool : [null, true, null, true, false],
 
     /*
         getters
@@ -34,7 +34,9 @@ Label_Handler.prototype = {
         return this.find_ranking_status(statuses);
     },
     get status(){
-        return this.current_status;
+        var status = this.current_status;
+        if(status == "active_valid") status = "valid";
+        return status;
     },
 
     /*
@@ -57,12 +59,13 @@ Label_Handler.prototype = {
     */
     define_status_state_holder : function(text_handler, text_handler_index){
         if(typeof this.statuses == "undefined") this.statuses = {};
-        this.statuses[text_handler_index] = text_handler.status;
+        this.statuses[text_handler_index] = text_handler.current_status;
     },
     append_status_change_listener : function(text_handler, text_handler_index){ // sets the on_status_change function for a text handler
-        text_handler.on_status_change = (function(new_status){
+        var on_change_function = (function(new_status){
             this.report_status_change(new_status, text_handler_index);
         }).bind(this);
+        text_handler.set_on_status_change(on_change_function);
     },
     report_status_change : function(new_status, text_handler_index){
         // update the status for that handler
@@ -82,6 +85,7 @@ Label_Handler.prototype = {
         display functionality
     */
     display_status_as : function(status){
+        if(status == "active_valid") status = "valid";
         this.dom.setAttribute('input-status', status)
     },
 

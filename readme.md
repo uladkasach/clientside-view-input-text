@@ -1,6 +1,6 @@
 # Clientside-View-Input-Text
 
-![clientside_view_input_text-demo](https://user-images.githubusercontent.com/10381896/40626997-25e91924-628a-11e8-9cea-85207a605f22.gif)
+![clientside_view_input_text-demo](https://user-images.githubusercontent.com/10381896/40683734-613277d6-635d-11e8-93a6-a3bae68c4762.gif)
 
 ## Install
 `npm install clientside-view-input-text --save`

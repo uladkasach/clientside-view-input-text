@@ -1,10 +1,11 @@
 {
   "name": "clientside-view-input-text",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "a text input made to plug into the browser utilizing the clientside-view-loader module; input validation, type enforcement, more",
   "components": {
     "root": "src"
   },
+  "main" : "src/multi_field_input.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
