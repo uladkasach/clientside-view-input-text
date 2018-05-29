@@ -19,8 +19,8 @@ module.exports = async function(template, options){
     textHandler.required = (options.required === true)?true:false; // default to false
 
     // if type is defined, add input enforcement
-    if(typeof options.type !== "undefined"){
-        if(options.type == "number"){
+    if(typeof options.type !== "undefined" && options.type != null){
+        if(options.type == "number" || options.type == "numeric"){
             textHandler.enforce.digits_only = true;
         } else if(options.type == "price"){
             textHandler.enforce.price = true;
