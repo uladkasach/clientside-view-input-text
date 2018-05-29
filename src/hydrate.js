@@ -33,7 +33,7 @@ module.exports = async function(template, options){
             textHandler.inputValidationFunction = textHandler.validation_handler.time; // assign validation function
             textHandler.enforce.numeric_time = true;
         } else {
-            console.error("Unknown type requested for options.type on template.input_text ")
+            console.error("Unknown type requested for options.type on clientside-view-input-text : " + options.type)
         }
     }
 
